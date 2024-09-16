@@ -35,7 +35,7 @@ function App() {
     });
 
     const addMenuName = () => {
-        if ($("espresso-menu-name").value === "") {
+        if ($("#espresso-menu-name").value === "") {
             alert("값을 입력해주세요.");
             return;
         }
