@@ -7,10 +7,26 @@
 // - [x] 메뉴가 추가되고 나면, input은 빈 값으로 초기화한다.
 // - [x] 사용자 입력값이 빈 값이라면 추가되지 않는다.
 
+// TODO 메뉴 수정
+// - [x] 메뉴의 수정 버튼 클릭 이벤트를 받고, 메뉴 수정하는 모달창(prompt)이 뜬다.
+// - [x] 모달창에서 신규 메뉴명을 입력 받고, 확인 버튼을 누르면 메뉴가 수정된다.
+
+
 // 달러표시는 js에서 DOM 엘리먼트, HTML DOM 엘리먼트를 가져올 때 관용적으로 사용한다.
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
+    // 메뉴 수정 기능
+    $("#espresso-menu-list").addEventListener("click", (e) => {
+        if (e.target.classList.contains("menu-edit-button")) {
+            const menuName = e.target.closest("li").querySelector(".menu-name").innerText;
+            const updateMenuName = prompt("메뉴명을 수정하세요", menuName);
+            if (updateMenuName) {
+                e.target.closest("li").querySelector(".menu-name").innerText = updateMenuName;
+            }
+        }
+    });
+
     // form 태그가 자동으로 전송되는 것을 막아줍니다.
     $("#espresso-menu-form").addEventListener("submit", (e) => {
         e.preventDefault();
