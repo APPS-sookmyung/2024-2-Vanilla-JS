@@ -11,12 +11,21 @@
 // - [x] 메뉴의 수정 버튼 클릭 이벤트를 받고, 메뉴 수정하는 모달창(prompt)이 뜬다.
 // - [x] 모달창에서 신규 메뉴명을 입력 받고, 확인 버튼을 누르면 메뉴가 수정된다.
 
+// TODO 메뉴 삭제
+// - [x] 메뉴 삭제 버튼 클릭 이벤트를 받고, 메뉴 삭제 컨펌 모달창이 뜬다.
+// - [x] 확인 버튼을 클릭하면 메뉴가 삭제된다.
+// - [x] 총 메뉴 갯수를 count하여 상단에 보여준다.
 
 // 달러표시는 js에서 DOM 엘리먼트, HTML DOM 엘리먼트를 가져올 때 관용적으로 사용한다.
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
-    // 메뉴 수정 기능
+    // 메뉴 개수를 업데이트하는 함수
+    const updateMenuCount = () => {
+        const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+        $(".menu-count").innerText = `총 ${menuCount}개`;
+    };
+
     $("#espresso-menu-list").addEventListener("click", (e) => {
         if (e.target.classList.contains("menu-edit-button")) {
             const menuName = e.target.closest("li").querySelector(".menu-name").innerText;
@@ -25,18 +34,19 @@ function App() {
                 e.target.closest("li").querySelector(".menu-name").innerText = updateMenuName;
             }
         }
+
+        if (e.target.classList.contains("menu-remove-button")) {
+            if (confirm("정말 삭제하시겠습니까?")) {
+                e.target.closest("li").remove();
+                updateMenuCount();
+            }
+        }
     });
 
     // form 태그가 자동으로 전송되는 것을 막아줍니다.
     $("#espresso-menu-form").addEventListener("submit", (e) => {
         e.preventDefault();
     });
-
-    // 메뉴 개수를 업데이트하는 함수
-    const updateMenuCount = () => {
-        const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-        $(".menu-count").innerText = `총 ${menuCount}개`;
-    };
 
     // 메뉴를 추가하는 함수
     const addMenuName = () => {
