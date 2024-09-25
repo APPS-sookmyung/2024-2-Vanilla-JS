@@ -13,16 +13,34 @@
 // - [x] 메뉴의 수정 버튼클릭 이벤트를 받고, 메뉴수정하는 모달창이 뜬다.
 // - [] 모달창에서 신규 메뉴명을 입력 받고, 확인버튼을 누르면 메뉴가 수정된다.
 
+// TODO 메뉴 삭제
+// - [x] 메뉴 삭제버튼 클릭 이벤트를 받고, 메뉴 삭제 컨펌 모달창이 뜬다.
+// - [x] 확인 버튼을 클릭하면 메뉴가 삭제된다.
+// - [x] 총 메뉴 갯수를 count하여 상단에 보여준다.
+
 // 달러표시는 JS에서의 DOM 엘리먼트, HTML DOM 엘레멘트를 가져올 때 관용적으로 사용
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
+	const updateMenuCount = () => {
+		const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+		$(".menu-count").innerText = `총 ${menuCount} 개`;
+	};
+
 	$("#espresso-menu-list").addEventListener("click", (e) => {
 		if (e.target.classList.contains("menu-edit-button")) {
 			const $menuName = e.target.closest("li").querySelector(".menu-name");
 			const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
 			// 가장 가까이에 있는 li를 가져와서 메뉴명을 수정한다
 			$menuName.innerText = updatedMenuName;
+		}
+
+		if (e.target.classList.contains("menu-remove-button")) {
+			if (confirm("정말 삭제하시겠습니까?")) {
+				// 리스트 내용 전체가 삭제되어야함
+				e.target.closest("li").remove();
+				updateMenuCount();
+			}
 		}
 	});
 	// form 태그가 자동으로 전송되는 걸 막아준다 (새로고침 방지)
@@ -61,9 +79,8 @@ function App() {
 		// 리스트에 새로운 메뉴를 추가 (기존 내용을 덮어쓰지 않도록 insertAdjacentHTML 사용)
 		$("#espresso-menu-list").insertAdjacentHTML("beforeend", menuItemTemplate(espressoMenuName));
 
-		// 메뉴의 총 개수를 업데이트
-		const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-		$(".menu-count").innerText = `총 ${menuCount} 개`;
+		// 메뉴의 총 개수를 업데이트 (리팩토링)
+		updateMenuCount();
 
 		// 메뉴가 추가된 후, input 값을 초기화
 		$("#espresso-menu-name").value = "";
@@ -85,7 +102,3 @@ function App() {
 }
 
 App();
-
-// TODO 메뉴 삭제
-// - [] 메뉴 삭제버튼 클릭 이벤트를 받고, 메뉴 삭제 컨펌 모달창이 뜬다.
-// - [] 확인 버튼을 클릭하면 메뉴가 삭제된다.
