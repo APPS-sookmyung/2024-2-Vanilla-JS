@@ -18,7 +18,6 @@
 // - [x] 확인 버튼을 클릭하면 메뉴가 삭제된다.
 // - [x] 총 메뉴 갯수를 count하여 상단에 보여준다.
 
-// 달러표시는 JS에서의 DOM 엘리먼트, HTML DOM 엘레멘트를 가져올 때 관용적으로 사용
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
@@ -27,28 +26,6 @@ function App() {
 		$(".menu-count").innerText = `총 ${menuCount} 개`;
 	};
 
-	$("#espresso-menu-list").addEventListener("click", (e) => {
-		if (e.target.classList.contains("menu-edit-button")) {
-			const $menuName = e.target.closest("li").querySelector(".menu-name");
-			const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
-			// 가장 가까이에 있는 li를 가져와서 메뉴명을 수정한다
-			$menuName.innerText = updatedMenuName;
-		}
-
-		if (e.target.classList.contains("menu-remove-button")) {
-			if (confirm("정말 삭제하시겠습니까?")) {
-				// 리스트 내용 전체가 삭제되어야함
-				e.target.closest("li").remove();
-				updateMenuCount();
-			}
-		}
-	});
-	// form 태그가 자동으로 전송되는 걸 막아준다 (새로고침 방지)
-	$("#espresso-menu-form").addEventListener("submit", (e) => {
-		e.preventDefault();
-	});
-
-	// 재사용할 수 있는 함수
 	const addMenuName = () => {
 		// input창이 빈 값인 경우, alert 창 띄우기
 		const espressoMenuName = $("#espresso-menu-name").value;
@@ -60,20 +37,20 @@ function App() {
 
 		const menuItemTemplate = (name) => {
 			return `<li class="menu-list-item d-flex items-center py-2">
-        <span class="w-100 pl-2 menu-name">${name}</span>
-        <button
-          type="button"
-        class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
-      >
-        수정
-      </button>
-      <button
-        type="button"
-        class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
-        >
-          삭제
-        </button>
-      </li>`;
+					<span class="w-100 pl-2 menu-name">${name}</span>
+					<button
+						type="button"
+					class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
+				>
+					수정
+				</button>
+				<button
+					type="button"
+					class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
+					>
+						삭제
+					</button>
+				</li>`;
 		};
 
 		// 리스트에 새로운 메뉴를 추가 (기존 내용을 덮어쓰지 않도록 insertAdjacentHTML 사용)
@@ -86,14 +63,38 @@ function App() {
 		$("#espresso-menu-name").value = "";
 	};
 
-	// 확인 버튼 클릭 이벤트 처리
-	$("#espresso-menu-submit-button").addEventListener("click", () => {
-		addMenuName();
+	const updatedMenuName = (e) => {
+		const $menuName = e.target.closest("li").querySelector(".menu-name");
+		const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
+		// 가장 가까이에 있는 li를 가져와서 메뉴명을 수정한다
+		$menuName.innerText = updatedMenuName;
+	};
+
+	const removeMenuName = (e) => {
+		if (confirm("정말 삭제하시겠습니까?")) {
+			// 리스트 내용 전체가 삭제되어야함
+			e.target.closest("li").remove();
+			updateMenuCount();
+		}
+	};
+
+	$("#espresso-menu-list").addEventListener("click", (e) => {
+		if (e.target.classList.contains("menu-edit-button")) {
+			updatedMenuName(e);
+		}
+
+		if (e.target.classList.contains("menu-remove-button")) {
+			removeMenuName(e);
+		}
 	});
 
-	// 메뉴 입력 시 Enter 키 입력 처리
+	$("#espresso-menu-form").addEventListener("submit", (e) => {
+		e.preventDefault();
+	});
+
+	$("#espresso-menu-submit-button").addEventListener("click", addMenuName);
+
 	$("#espresso-menu-name").addEventListener("keypress", (e) => {
-		// enter키를 누르지 않으면 함수 종료
 		if (e.key !== "Enter") {
 			return;
 		}
