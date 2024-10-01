@@ -15,7 +15,7 @@
 ## 스터디원
 
 - 스터디장 : 신정은
-- 스터디원 : 류미성
+- 스터디원 : 류미성, 홍연주
 
 <br>
 
@@ -79,3 +79,5 @@
 
 - [☕ 블랙커피 Vanilla JS Lv1. 문벅스 카페 메뉴 앱 만들기](https://www.udemy.com/course/vanilla-js-lv1/)
 - [만들면서 배우는 리액트 : 기초](https://www.inflearn.com/course/%EB%A7%8C%EB%93%A4%EB%A9%B4%EC%84%9C-%EB%B0%B0%EC%9A%B0%EB%8A%94-%EB%A6%AC%EC%95%A1%ED%8A%B8-%EA%B8%B0%EC%B4%88?gad_source=1&gclid=CjwKCAjwreW2BhBhEiwAavLwfGCQzF_2ozhKTVisFDjc9B2PoqMgdCikut-Urii0xFmfKLgdK0-tFhoCrTUQAvD_BwE)
+
+테스트
