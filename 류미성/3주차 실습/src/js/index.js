@@ -42,51 +42,70 @@ function App() {
 	// 상태는 변할 수 있는 데이터 (메뉴명)
 	// 갯수는 배열로 있으면 자동으로 구할 수 있기 때문에, 로컬스토리지에서 굳이 관리할 필요는 없음 (관리: 저장하고 읽어오기)
 	// 데이터는 우리가 꼭 관리해야하는 것만 관리해야함. 그렇지 않으면 코드가 복잡해짐
+
+	// 메뉴가 여러개 이므로, 배열로서 초기화함
+	this.menu = [];
+
 	const updateMenuCount = () => {
 		const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
 		$(".menu-count").innerText = `총 ${menuCount} 개`;
 	};
 
 	const addMenuName = () => {
-		// input창이 빈 값인 경우, alert 창 띄우기
-		const espressoMenuName = $("#espresso-menu-name").value;
-		if (espressoMenuName === "") {
+		if ($("#espresso-menu-name").value === "") {
 			alert("값을 입력해주세요");
-			// early return을 통해 뒷부분이 수행되지 않도록 함
 			return;
 		}
 
-		const menuItemTemplate = (name) => {
-			return `<li class="menu-list-item d-flex items-center py-2">
-					<span class="w-100 pl-2 menu-name">${name}</span>
-					<button
-						type="button"
-					class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
-				>
-					수정
-				</button>
-				<button
-					type="button"
-					class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
-					>
-						삭제
-					</button>
-				</li>`;
-		};
+		const espressoMenuName = $("#espresso-menu-name").value;
+
+		// 객체로서 담음
+		this.menu.push({ name: espressoMenuName });
+
+		// store라는 객체에 setLocalStorage 데이터를 담음
+		store.setLocalStorage(this.menu);
+
+		// 메뉴별로 마크업을 하기 위해 map이라는 메서드 사용
+		const template = this.menu
+			.map((menuItem, index) => {
+				return `<li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
+			<span class="w-100 pl-2 menu-name">${menuItem.name}</span>
+			<button
+				type="button"
+			class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
+		>
+			수정
+		</button>
+		<button
+			type="button"
+			class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
+			>
+				삭제
+			</button>
+		</li>`;
+			})
+			.join("");
 
 		// 리스트에 새로운 메뉴를 추가 (기존 내용을 덮어쓰지 않도록 insertAdjacentHTML 사용)
-		$("#espresso-menu-list").insertAdjacentHTML("beforeend", menuItemTemplate(espressoMenuName));
+		// $("#espresso-menu-list").insertAdjacentHTML("beforeend", menuItemTemplate(espressoMenuName));
 
-		// 메뉴의 총 개수를 업데이트 (리팩토링)
+		// 바꾼 메뉴를 한꺼번에 불러오기 위함
+		$("#espresso-menu-list").innerHTML = template;
 		updateMenuCount();
-
-		// 메뉴가 추가된 후, input 값을 초기화
 		$("#espresso-menu-name").value = "";
 	};
 
 	const updatedMenuName = (e) => {
+		// data 속성을 부여한 후, dataset이라는 속성으로 접근 가능
+		const menuId = e.target.closest("li").dataset.menuId;
 		const $menuName = e.target.closest("li").querySelector(".menu-name");
 		const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
+
+		this.menu[menuId].name = updatedMenuName;
+		// 데이터를 변경하는 것은 최소한으로 해야함. 여러군데서 데이터를 변경할 수 있으면, 데이터 상태가 꼬일 수 있음
+		// localStorage.setItem(this.menu) X
+		store.setLocalStorage(this.menu);
+
 		// 가장 가까이에 있는 li를 가져와서 메뉴명을 수정한다
 		$menuName.innerText = updatedMenuName;
 	};
@@ -123,4 +142,7 @@ function App() {
 	});
 }
 
-App();
+// App 함수가 일반 함수로 호출될 때 this가 window 객체를 가리키게 되어 문제가 발생
+// App을 객체 형태로 호출할 수 있도록 클래스나 new 키워드를 사용
+const app = new App();
+app.init();
