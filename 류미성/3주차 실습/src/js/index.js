@@ -3,7 +3,7 @@
 // - [x] 메뉴를 추가할 때 저장
 // - [x] 메뉴를 수정할 때 저장
 // - [x] 메뉴를 삭제할 때 저장
-// - [] localStorage에 있는 데이터를 읽어온다.
+// - [x] localStorage에 있는 데이터를 읽어온다.
 
 //TODO 카테고리별 메뉴판 관리
 // - [] 에스프레소 메뉴판 관리
@@ -29,12 +29,14 @@ const $ = (selector) => document.querySelector(selector);
 // 해당 JSON 객체를 문자열로 저장가능
 const store = {
 	setLocalStorage(menu) {
-		// localStorage.setItem("menu", menu)
-		localStorage.setItem("menu", JSON.stringify(menu));
+		// localStorage.setItem("menu", menu) X
+		// 저장은 문자열로 하고,
+		return localStorage.setItem("menu", JSON.stringify(menu));
 	},
 
 	getLocalStorage() {
-		localStorage.getItem("menu");
+		// 데이터를 불러올때는 parse 하기
+		return JSON.parse(localStorage.getItem("menu"));
 	},
 };
 
@@ -45,26 +47,15 @@ function App() {
 
 	// 메뉴가 여러개 이므로, 배열로서 초기화함
 	this.menu = [];
-
-	const updateMenuCount = () => {
-		const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-		$(".menu-count").innerText = `총 ${menuCount} 개`;
+	this.init = () => {
+		// 로컬스토리지에 1개 이상의 데이터가 있다면, 있는 메뉴를 this.menu에 가져옴
+		if (store.getLocalStorage().length >= 1) {
+			this.menu = store.getLocalStorage();
+		}
+		render();
 	};
 
-	const addMenuName = () => {
-		if ($("#espresso-menu-name").value === "") {
-			alert("값을 입력해주세요");
-			return;
-		}
-
-		const espressoMenuName = $("#espresso-menu-name").value;
-
-		// 객체로서 담음
-		this.menu.push({ name: espressoMenuName });
-
-		// store라는 객체에 setLocalStorage 데이터를 담음
-		store.setLocalStorage(this.menu);
-
+	const render = () => {
 		// 메뉴별로 마크업을 하기 위해 map이라는 메서드 사용
 		const template = this.menu
 			.map((menuItem, index) => {
@@ -85,13 +76,33 @@ function App() {
 		</li>`;
 			})
 			.join("");
+		$("#espresso-menu-list").innerHTML = template;
+		updateMenuCount();
+	};
+
+	const updateMenuCount = () => {
+		const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+		$(".menu-count").innerText = `총 ${menuCount} 개`;
+	};
+
+	const addMenuName = () => {
+		if ($("#espresso-menu-name").value === "") {
+			alert("값을 입력해주세요");
+			return;
+		}
+
+		const espressoMenuName = $("#espresso-menu-name").value;
+
+		// 객체로서 담음
+		this.menu.push({ name: espressoMenuName });
+
+		// store라는 객체에 setLocalStorage 데이터를 담음
+		store.setLocalStorage(this.menu);
 
 		// 리스트에 새로운 메뉴를 추가 (기존 내용을 덮어쓰지 않도록 insertAdjacentHTML 사용)
 		// $("#espresso-menu-list").insertAdjacentHTML("beforeend", menuItemTemplate(espressoMenuName));
 
-		// 바꾼 메뉴를 한꺼번에 불러오기 위함
-		$("#espresso-menu-list").innerHTML = template;
-		updateMenuCount();
+		render();
 		$("#espresso-menu-name").value = "";
 	};
 
