@@ -22,29 +22,10 @@
 // - [] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
 // - [] 클릭이벤트에서 가장 가까운 li태그의 class 속성 값에 sold-out을 추가한다.
 
-const $ = (selector) => document.querySelector(selector);
-
-// 로컬스토리지에는 문자열 형태로만 저장하기. object 형태로 그대로 저장해서 관리할 수 없음.
-// JSON 객체 형태를 문자열로 저장하기 위해, 사용하는 메서드가 JSON.stringify()
-// 해당 JSON 객체를 문자열로 저장가능
-const store = {
-  setLocalStorage(menu) {
-    // localStorage.setItem("menu", menu) X
-    // 저장은 문자열로 하고,
-    return localStorage.setItem("menu", JSON.stringify(menu));
-  },
-
-  getLocalStorage() {
-    // 데이터를 불러올때는 parse 하기
-    return JSON.parse(localStorage.getItem("menu"));
-  },
-};
+import { $ } from "./utils/dom.js";
+import store from "./store/index.js";
 
 function App() {
-  // 상태는 변할 수 있는 데이터 (메뉴명)
-  // 갯수는 배열로 있으면 자동으로 구할 수 있기 때문에, 로컬스토리지에서 굳이 관리할 필요는 없음 (관리: 저장하고 읽어오기)
-  // 데이터는 우리가 꼭 관리해야하는 것만 관리해야함. 그렇지 않으면 코드가 복잡해짐
-
   // 메뉴가 여러개 이므로, 배열로서 초기화함
   this.menu = {
     espresso: [],
@@ -61,6 +42,7 @@ function App() {
       this.menu = store.getLocalStorage();
     }
     render();
+    initEventListeners();
   };
 
   const render = () => {
@@ -97,7 +79,7 @@ function App() {
   };
 
   const updateMenuCount = () => {
-    const menuCount = $("#menu-list").querySelectorAll("li").length;
+    const menuCount = this.menu[this.currentCategory].length;
     $(".menu-count").innerText = `총 ${menuCount} 개`;
   };
 
@@ -132,9 +114,7 @@ function App() {
     // 데이터를 변경하는 것은 최소한으로 해야함. 여러군데서 데이터를 변경할 수 있으면, 데이터 상태가 꼬일 수 있음
     // localStorage.setItem(this.menu) X
     store.setLocalStorage(this.menu);
-
-    // 가장 가까이에 있는 li를 가져와서 메뉴명을 수정한다
-    $menuName.innerText = updatedMenuName;
+    render();
   };
 
   const removeMenuName = (e) => {
@@ -143,8 +123,7 @@ function App() {
       const menuId = e.target.closest("li").dataset.menuId;
       this.menu[this.currentCategory].splice(menuId, 1);
       store.setLocalStorage(this.menu);
-      e.target.closest("li").remove();
-      updateMenuCount();
+      render();
     }
   };
 
@@ -156,46 +135,49 @@ function App() {
     render();
   };
 
-  $("#menu-list").addEventListener("click", (e) => {
-    if (e.target.classList.contains("menu-edit-button")) {
-      updatedMenuName(e);
-      return;
-    }
+  const initEventListeners = () => {
+    $("#menu-list").addEventListener("click", (e) => {
+      if (e.target.classList.contains("menu-edit-button")) {
+        updatedMenuName(e);
+        return;
+      }
 
-    if (e.target.classList.contains("menu-remove-button")) {
-      removeMenuName(e);
-      return;
-    }
+      if (e.target.classList.contains("menu-remove-button")) {
+        removeMenuName(e);
+        return;
+      }
 
-    if (e.target.classList.contains("menu-sold-out-button")) {
-      soldOutMenu(e);
-      return;
-    }
-  });
+      if (e.target.classList.contains("menu-sold-out-button")) {
+        soldOutMenu(e);
+        return;
+      }
+    });
 
-  $("#menu-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
+    $("#menu-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+    });
 
-  $("#menu-submit-button").addEventListener("click", addMenuName);
+    $("#menu-submit-button").addEventListener("click", addMenuName);
 
-  $("#menu-name").addEventListener("keypress", (e) => {
-    if (e.key !== "Enter") {
-      return;
-    }
-    addMenuName();
-  });
+    $("#menu-name").addEventListener("keypress", (e) => {
+      if (e.key !== "Enter") {
+        return;
+      }
+      addMenuName();
+    });
 
-  $("nav").addEventListener("click", (e) => {
-    const isCategoryButton = e.target.classList.contains("cafe-category-name");
-    // 예외처리
-    if (isCategoryButton) {
-      const categoryName = e.target.dataset.categoryName;
-      this.currentCategory = categoryName;
-      $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
-      render();
-    }
-  });
+    $("nav").addEventListener("click", (e) => {
+      const isCategoryButton =
+        e.target.classList.contains("cafe-category-name");
+      // 예외처리
+      if (isCategoryButton) {
+        const categoryName = e.target.dataset.categoryName;
+        this.currentCategory = categoryName;
+        $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
+        render();
+      }
+    });
+  };
 }
 
 // App 함수가 일반 함수로 호출될 때 this가 window 객체를 가리키게 되어 문제가 발생
