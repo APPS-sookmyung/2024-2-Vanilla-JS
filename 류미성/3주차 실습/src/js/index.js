@@ -77,7 +77,7 @@ function App() {
     $(".menu-count").innerText = `총 ${menuCount} 개`;
   };
 
-  const addMenuName = () => {
+  const addMenuName = async () => {
     if ($("#menu-name").value === "") {
       alert("값을 입력해주세요");
       return;
@@ -85,7 +85,7 @@ function App() {
 
     const menuName = $("#menu-name").value;
 
-    fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
+    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,6 +97,17 @@ function App() {
       })
       .then((data) => {
         console.log(data);
+      });
+
+    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        this.menu[this.currentCategory] = data;
+        render();
+        $("#menu-name").value = "";
       });
 
     // 객체로서 담음
