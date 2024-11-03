@@ -1,17 +1,19 @@
-// TODO LS read & write
-// localStorage에 데이터를 저장한다. 
-// localStorage 에 있는 데이터를 읽어온다. ​
+import { $ } from "./utils/dom.js";
+import store from "./store/index.js";
 
-// TODO 카테고리별 메뉴판 관리
-// 에스프레소 메뉴판 관리 
-// 프라푸치노 메뉴판 관리
-// 블렌디드 메뉴판 관리
-// 티바나 메뉴판 관리
-// 디저트 메뉴판 관리
+// - [] 웹 세버를 띄운다.
+// - [] 서버에 새로운 메뉴가 추가될 수 있도록 요청한다.
+// - [] 서버에 카테고리별 메뉴리스트를 불러온다.
+// - [] 서버에 메뉴가 수정될 수 있도록 요청한다.
+// - [] 서버에 메뉴의 품질상태가 토글될 수 있또록 한다.
+// - [] 서버에 메뉴가 삭제될 수 있도록 요청한다.
 
-// TODO 페이지 접근시 최초 데이터 Read & Rendering 
-// 페이지에 최초로 접근할 때 localStorage 에 에스프레소 메뉴를 읽어온다.
-// 에스프레소 메뉴를 페이지에 그려준다.
+// TODO 리펙터링 부분
+// - [] localStorage에 저장하는 로직은 지운다.
+// - [] fetch 비동기 api 사용하는 부분을 async await을 사용하여 구현한다.
+
+// - [] API 통신이 실패하는 경우에 대해 사용자가 알 수 있게 alert로 예외처리를 진행한다.
+// - [] 중복되는 메뉴는 추가할 수 없다.
 
 const $ = (selector) => document.querySelector(selector);
 
