@@ -81,6 +81,17 @@ function App() {
         $("#espresso-menu-name").value = "";
     };
 
+    fetch(`${BASE_URL}/category/${this.currentCategory}/menu`, {
+        method: "POST", headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: menuName }),
+    
+    }).then((response)=> {
+        response.json()
+        console.log(response);
+    });
+
     const updateMenuName = (e) => {
         const $menuName = e.target.closest("li").querySelector(".menu-name");
         const menuName = $menuName.innerText;
