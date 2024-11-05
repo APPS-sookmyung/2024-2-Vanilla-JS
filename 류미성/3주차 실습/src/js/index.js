@@ -37,6 +37,23 @@ const MenuApi = {
       console.error("에러발생");
     }
   },
+
+  async updateMenu(category, name, menuId) {
+    const response = await fetch(
+      `${BASE_URL}/category/${category}/menu/${menuId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name }),
+      }
+    );
+    if (!response.ok) {
+      console.error("에러발생");
+    }
+    return response.json();
+  },
 };
 
 function App() {
@@ -63,8 +80,10 @@ function App() {
   const render = () => {
     // 메뉴별로 마크업을 하기 위해 map이라는 메서드 사용
     const template = this.menu[this.currentCategory]
-      .map((menuItem, index) => {
-        return `<li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
+      .map((menuItem) => {
+        return `<li data-menu-id="${
+          menuItem.id
+        }" class="menu-list-item d-flex items-center py-2">
 			<span class="w-100 pl-2 menu-name ${menuItem.soldOut ? "sold-out" : ""}">${
           menuItem.name
         }</span>
@@ -114,16 +133,16 @@ function App() {
     $("#menu-name").value = "";
   };
 
-  const updatedMenuName = (e) => {
+  const updatedMenuName = async (e) => {
     // data 속성을 부여한 후, dataset이라는 속성으로 접근 가능
     const menuId = e.target.closest("li").dataset.menuId;
     const $menuName = e.target.closest("li").querySelector(".menu-name");
     const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
 
-    this.menu[this.currentCategory][menuId].name = updatedMenuName;
-    // 데이터를 변경하는 것은 최소한으로 해야함. 여러군데서 데이터를 변경할 수 있으면, 데이터 상태가 꼬일 수 있음
-    // localStorage.setItem(this.menu) X
-    store.setLocalStorage(this.menu);
+    await MenuApi.updateMenu(this.currentCategory, updatedMenuName, menuId);
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
     render();
   };
 
