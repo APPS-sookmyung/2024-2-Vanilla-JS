@@ -2,6 +2,22 @@ import { $ } from "./utils/dom.js";
 import { MenuAPI } from "./libs/index.js";
 import { MESSAGE } from "./constants/index.js";
 
+// TODO 서버 요청 부분
+// - [x] 웹 서버를 띄운다.
+// - [x] 서버에 새로운 메뉴가 추가될 수 있도록 요청한다.
+// - [x] 서버에 카테고리별 메뉴 리스트를 불러온다.
+// - [x] 서버에 메뉴가 수정될 수 있도록 요청한다.
+// - [x] 서버에 메뉴의 품질 상태가 토글될 수 있도록 요청한다.
+// - [x] 서버에 메뉴가 삭제될 수 있도록 요청한다.
+
+// TODO 리펙터링 부분
+// - [x] localStorage에 저장하는 로직은 지운다.
+// - [x] fetch 비동기 api를 사용하는 부분을 async await을 사용해 구현한다.
+
+// TODO 사용자 경험
+// - [x] API 통신이 실패하는 경우에 대해 사용자가 알 수 있게 alert로 예외를 진행한다.
+// - [x] 중복되는 메뉴는 추가할 수 없다.
+
 function App() {
     this.menu = [];
 
