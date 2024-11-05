@@ -19,6 +19,13 @@ import store from "./store/index.js";
 // fetch("url", option);
 const BASE_URL = "http://localhost:3000/api";
 
+const MenuApi = {
+  async getAllMenuByCategory(category) {
+    const response = await fetch(`${BASE_URL}/category/${category}/menu`);
+    return response.json();
+  },
+};
+
 function App() {
   // 메뉴가 여러개 이므로, 배열로서 초기화함
   this.menu = {
@@ -30,12 +37,13 @@ function App() {
   };
 
   this.currentCategory = "espresso";
-  this.init = () => {
-    // 로컬스토리지에 1개 이상의 데이터가 있다면, 있는 메뉴를 this.menu에 가져옴
-    if (store.getLocalStorage()) {
-      this.menu = store.getLocalStorage();
-    }
+
+  this.init = async () => {
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
     render();
+
     initEventListeners();
   };
 
@@ -91,36 +99,16 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name: menuName }),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-      });
+    }).then((response) => {
+      return response.json();
+    });
 
-    await fetch(`${BASE_URL}/category/${this.currentCategory}/menu`)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        this.menu[this.currentCategory] = data;
-        render();
-        $("#menu-name").value = "";
-      });
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
 
-    // 객체로서 담음
-    // this.menu[this.currentCategory].push({ name: menuName });
-
-    // store라는 객체에 setLocalStorage 데이터를 담음
-    // store.setLocalStorage(this.menu);
-
-    // 리스트에 새로운 메뉴를 추가 (기존 내용을 덮어쓰지 않도록 insertAdjacentHTML 사용)
-    // $("#menu-list").insertAdjacentHTML("beforeend", menuItemTemplate(menuName));
-
-    // render();
-    // $("#menu-name").value = "";
+    render();
+    $("#menu-name").value = "";
   };
 
   const updatedMenuName = (e) => {
