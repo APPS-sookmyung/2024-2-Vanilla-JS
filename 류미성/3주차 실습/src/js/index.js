@@ -95,6 +95,7 @@ function App() {
     );
     if (duplicatedItem) {
       alert("이미 등록된 메뉴입니다. 다시 입력해주세요.");
+      $("#menu-name").value = "";
       return;
     }
 
